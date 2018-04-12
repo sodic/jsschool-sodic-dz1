@@ -19,7 +19,7 @@ class AppContainer extends Component {
 
   setError = () => this.setState({ hasError: true });
 
-  processRequest = async (apiCall, onSuccess, onFail) => {
+  processRequest = async ({ apiCall, onSuccess, onFail }) => {
     this.setState({ isLoading: true });
     try {
       let resp = await apiCall();
@@ -84,11 +84,11 @@ class AppContainer extends Component {
   // methods which communicate with the server
 
   async componentDidMount() {
-    await this.processRequest(
-      API.getTodos,
-      resp => this.updateList(resp.data),
-      this.setError
-    );
+    await this.processRequest({
+      apiCall: API.getTodos,
+      onSuccess: resp => this.updateList(resp.data),
+      onFail: this.setError
+    });
   }
 
   handleAddButtonClick = async () => {
@@ -98,27 +98,27 @@ class AppContainer extends Component {
       return;
     }
 
-    await this.processRequest(
-      () => API.addTodo(text),
-      resp => this.addToList(resp.data),
-      this.setError
-    );
+    await this.processRequest({
+      apiCall: () => API.addTodo(text),
+      onSuccess: resp => this.addToList(resp.data),
+      onFail: this.setError
+    });
   };
 
   handleIsDoneToggle = async (todoId, isDone) => {
-    await this.processRequest(
-      () => API.toggleTodoStatus(todoId, isDone),
-      () => this.updateTodoStatus(todoId, isDone),
-      this.setError
-    );
+    await this.processRequest({
+      apiCall: () => API.toggleTodoStatus(todoId, isDone),
+      onSuccess: () => this.updateTodoStatus(todoId, isDone),
+      onFail: this.setError
+    });
   };
 
   handleTrashClicked = async todoId => {
-    await this.processRequest(
-      () => API.deleteTodo(todoId),
-      () => this.removeFromList(todoId),
-      this.setError
-    );
+    await this.processRequest({
+      apiCall: () => API.deleteTodo(todoId),
+      onSuccess: () => this.removeFromList(todoId),
+      onFail: this.setError
+    });
   };
 
   render() {
