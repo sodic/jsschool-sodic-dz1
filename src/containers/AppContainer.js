@@ -20,11 +20,14 @@ class AppContainer extends Component {
   setError = () => this.setState({ hasError: true });
 
   processRequest = async (apiCall, onSuccess, onFail) => {
+    this.setState({ isLoading: true });
     try {
       let resp = await apiCall();
       onSuccess(resp);
     } catch (err) {
       onFail(err);
+    } finally {
+      this.setState({ isLoading: false });
     }
   };
 
@@ -81,15 +84,11 @@ class AppContainer extends Component {
   // methods which communicate with the server
 
   async componentDidMount() {
-    this.setState({ isLoading: true });
-
     await this.processRequest(
       API.getTodos,
       resp => this.updateList(resp.data),
       this.setError
     );
-
-    this.setState({ isLoading: false });
   }
 
   handleAddButtonClick = async () => {
